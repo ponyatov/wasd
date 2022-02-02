@@ -1,0 +1,16 @@
+*~
+*.swp
+*.log
+
+/WASD.mk
+/WASD/
+/docs/
+
+/.qmake.stash
+
+/target/
+*.lock
+
+__pycache__/
+
+!.gitignore
