@@ -17,9 +17,17 @@ SHADOW ?= shadow
 CORES   = $(shell grep processor /proc/cpuinfo| wc -l)
 # / var
 
+APP ?= $(MODULE)
+HW  ?= qemu386
+include  app/$(APP).mk
+include   hw/$(HW).mk
+include  cpu/$(CPU).mk
+include arch/$(ARCH).mk
+
 # \ version
 VER        ?= 0.0.1
 KAITAI_VER  = 0.9
+BR_VER      = 2021.11.1
 # / version
 
 # \ dir
@@ -126,16 +134,40 @@ KAITAI_GIT = https://github.com/kaitai-io/kaitai_struct_compiler
 tmp/$(KAITAI_DEB):
 	$(CURL) $@ $(KAITAI_GIT)/releases/download/$(KAITAI_VER)/$(KAITAI_DEB)
 
+BR     = buildroot-$(BR_VER)
+BR_ZIP = $(BR).tar.gz
+BR_URL = https://github.com/buildroot/buildroot/archive/refs/tags/$(BR_VER).tar.gz
+
+$(TMP)/$(BR_ZIP):
+	$(CURL) $@ $(BR_URL)
+
 .PHONY: gz
-gz: tmp/$(KAITAI_DEB)
+gz: tmp/$(KAITAI_DEB) $(TMP)/$(BR_ZIP)
 # / gz
 # / install
+
+# \ buildroot
+.PHONY: br
+br: $(SRC)/$(BR)/README
+	cd $(SRC)/$(BR) ; rm -f .config ; \
+	make allnoconfig ; \
+	cat ../../any/any.br \
+	    ../../app/$(MODULE).br \
+	    ../../hw/$(HW).br \
+	    ../../cpu/$(CPU).br \
+	    ../../arch/$(ARCH).br \
+		>> .config ; \
+	make menuconfig
+$(SRC)/$(BR)/README: $(TMP)/$(BR_ZIP)
+	cd src ; tar zx < $< && touch $@
+# / buildroot
 
 # \ merge
 MERGE  = README.md Makefile .gitignore apt.dev apt.txt $(S)
 MERGE += .vscode bin doc lib src tmp
 MERGE += requirements.txt .clang-format doxy.gen
 MERGE += $(MODULE).pro
+MERGE += any app hw cpu arch boot fs
 
 .PHONY: shadow
 shadow:

@@ -1,0 +1,2 @@
+BR2_DL_DIR="$(HOME)/gz"
+BR2_STRIP_strip=y

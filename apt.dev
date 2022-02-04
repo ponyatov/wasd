@@ -2,4 +2,5 @@ code meld doxygen
 clang-format-11
 build-essential g++
 flex bison binpac
-qt5-qmake qt5-default
+qt5-qmake
+libncurses-dev
