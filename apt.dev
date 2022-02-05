@@ -4,3 +4,6 @@ build-essential g++
 flex bison binpac
 qt5-qmake
 libncurses-dev
+rsync bc
+qemu-system-x86
+obs-studio kdenlive vlc

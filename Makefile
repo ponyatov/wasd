@@ -68,11 +68,11 @@ CXX    ?= g++
 Y += $(MODULE).py config.py
 S += $(Y)
 # C++
-C += $(shell find src -type f -regex ".+.cpp$$")
-H += $(shell find src -type f -regex ".+.hpp$$")
+C += $(shell find src -maxdepth 1 -type f -regex ".+.cpp$$")
+H += $(shell find src -maxdepth 1 -type f -regex ".+.hpp$$")
 S += $(C) $(H)
 # F-script
-F += $(shell find lib -type f -regex ".+.f$$")
+F += $(shell find lib -maxdepth 1 -type f -regex ".+.f$$")
 S += $(F)
 # parser
 CP += tmp/$(MODULE).parser.cpp tmp/$(MODULE).lexer.cpp
@@ -155,10 +155,10 @@ gz: $(GZ)/$(KAITAI_DEB) $(GZ)/$(BR_ZIP)
 HOSTNAME    = $(shell echo $(APP) | tr A-Z a-z)
 
 BR_CFG      = $(CWD)/any/any.br
-BR_CFG     += $(CWD)/app/$(MODULE).br
 BR_CFG     += $(CWD)/arch/$(ARCH).br
 BR_CFG     += $(CWD)/cpu/$(CPU).br
 BR_CFG     += $(CWD)/hw/$(HW).br
+BR_CFG     += $(CWD)/app/$(APP).br
 
 KERNEL_CFG  = $(CWD)/arch/$(ARCH).kernel
 KERNEL_CFG += $(CWD)/cpu/$(CPU).kernel
@@ -166,6 +166,8 @@ KERNEL_CFG += $(CWD)/hw/$(HW).kernel
 
 KERNEL_CONFIG  = $(TMP)/config.kernel
 KERNEL_CFG    += $(KERNEL_CONFIG)
+KERNEL_CFG    += $(CWD)/app/$(APP).kernel
+
 
 .PHONY: br
 br: $(SRC)/$(BR)/README
