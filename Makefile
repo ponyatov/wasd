@@ -43,6 +43,10 @@ LIB     = $(CWD)/lib
 SRC     = $(CWD)/src
 # temporary/flags/generated files
 TMP     = $(CWD)/tmp
+# source code collection
+GZ      = $(HOME)/gz
+# firmware directory (ROMs and disk images)
+FW      = $(CWD)/boot
 # / dir
 
 # \ tool
@@ -113,9 +117,10 @@ tmp/$(MODULE).lexer.cpp: src/$(MODULE).lex
 
 # \ install
 .PHONY: install update
-install: $(OS)_install gz
+install: $(OS)_install
+	mkdir -p $(GZ) ; $(MAKE) gz
+	sudo dpkg -i $(GZ)/$(KAITAI_DEB)
 	$(MAKE) update
-	sudo dpkg -i tmp/$(KAITAI_DEB)
 
 update: $(OS)_update $(PIP)
 	$(PIP) install --user -U pip autopep8 pytest
@@ -131,35 +136,64 @@ KAITAI_DEB = kaitai-struct-compiler_$(KAITAI_VER)_all.deb
 
 KAITAI_GIT = https://github.com/kaitai-io/kaitai_struct_compiler
 
-tmp/$(KAITAI_DEB):
+$(GZ)/$(KAITAI_DEB):
 	$(CURL) $@ $(KAITAI_GIT)/releases/download/$(KAITAI_VER)/$(KAITAI_DEB)
 
 BR     = buildroot-$(BR_VER)
 BR_ZIP = $(BR).tar.gz
 BR_URL = https://github.com/buildroot/buildroot/archive/refs/tags/$(BR_VER).tar.gz
 
-$(TMP)/$(BR_ZIP):
+$(GZ)/$(BR_ZIP):
 	$(CURL) $@ $(BR_URL)
 
 .PHONY: gz
-gz: tmp/$(KAITAI_DEB) $(TMP)/$(BR_ZIP)
+gz: $(GZ)/$(KAITAI_DEB) $(GZ)/$(BR_ZIP)
 # / gz
 # / install
 
 # \ buildroot
+HOSTNAME    = $(shell echo $(APP) | tr A-Z a-z)
+
+BR_CFG      = $(CWD)/any/any.br
+BR_CFG     += $(CWD)/app/$(MODULE).br
+BR_CFG     += $(CWD)/arch/$(ARCH).br
+BR_CFG     += $(CWD)/cpu/$(CPU).br
+BR_CFG     += $(CWD)/hw/$(HW).br
+
+KERNEL_CFG  = $(CWD)/arch/$(ARCH).kernel
+KERNEL_CFG += $(CWD)/cpu/$(CPU).kernel
+KERNEL_CFG += $(CWD)/hw/$(HW).kernel
+
+KERNEL_CONFIG  = $(TMP)/config.kernel
+KERNEL_CFG    += $(KERNEL_CONFIG)
+
 .PHONY: br
 br: $(SRC)/$(BR)/README
 	cd $(SRC)/$(BR) ; rm -f .config ; \
 	make allnoconfig ; \
-	cat ../../any/any.br \
-	    ../../app/$(MODULE).br \
-	    ../../hw/$(HW).br \
-	    ../../cpu/$(CPU).br \
-	    ../../arch/$(ARCH).br \
-		>> .config ; \
+	cat  $(BR_CFG) >> .config ; \
+	echo 'BR2_LINUX_KERNEL_CUSTOM_CONFIG_FILE="$(CWD)/any/any.kernel"' >> .config ; \
+	echo 'BR2_TARGET_GENERIC_HOSTNAME="$(HOSTNAME)"' >> .config ; \
+	echo 'BR2_TARGET_GENERIC_ISSUE="$(APP) @ $(HW) (c) SSAU Kontur"' >> .config ; \
+	echo 'BR2_ROOTFS_OVERLAY="$(CWD)/fs"' >> .config ; \
+	echo 'BR2_LINUX_KERNEL_CONFIG_FRAGMENT_FILES="$(KERNEL_CFG)"' >> .config ; \
 	make menuconfig
-$(SRC)/$(BR)/README: $(TMP)/$(BR_ZIP)
+	$(MAKE) kernel
+
+.PHONY: kernel
+kernel: $(SRC)/$(BR)/README
+	cd $(SRC)/$(BR) ; \
+	echo 'CONFIG_DEFAULT_HOSTNAME="$(HOSTNAME)"' > $(KERNEL_CONFIG) ; \
+	make linux-menuconfig && \
+	make -j$(CORES)
+
+$(SRC)/$(BR)/README: $(GZ)/$(BR_ZIP)
 	cd src ; tar zx < $< && touch $@
+
+QEMU = qemu-system-$(ARCH)
+.PHONY: qemu
+qemu:
+	$(QEMU) $(QEMU_BOOT)
 # / buildroot
 
 # \ merge
