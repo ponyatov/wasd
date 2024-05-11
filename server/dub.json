@@ -6,6 +6,7 @@
     "license":      "MIT",
     "targetType":   "executable",
     "targetPath":   "../bin",
+    "stringImportPaths": ["../static","../doc"],
     "dependencies": {
         "wasd:config" : {"path" : "../config"},
         "pegged": "~>0.4.9"

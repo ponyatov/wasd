@@ -37,42 +37,52 @@ mixin(grammar(`
         head     < 'GET' [/a-z\.]+ :"HTTP/1.1"
 `));
 
+const index_html = cast(immutable ubyte[]) import("index.html");
+const css_css = cast(immutable ubyte[]) import("css.css");
+const logo_png = cast(immutable ubyte[]) import("logo.png");
+
+const ok = "HTTP/1.1 200 OK\n"c;
+const plain = "Content-Type: text/plain; charset=utf-8\n"c;
+const png = "Content-Type: image/png\n"c;
+
 void serve(string argv0, string ip, ushort port) {
     auto listener = new Socket(AddressFamily.INET, SocketType.STREAM);
     writefln("%s @ http://%s:%d (%s)", argv0, ip, port, listener.hostName);
     listener.bind(new InternetAddress(ip, port));
     listener.listen(1);
-    // while (true) {
-    // recv
-    auto client = listener.accept();
-    writef("%s %s\t", client.remoteAddress, client.hostName);
-    char[1024] buffer;
-    auto got = client.receive(buffer);
-    // resp
-
-    const ok = "HTTP/1.1 200 OK\n"c;
-    const plain = "Content-Type: text/plain; charset=utf-8\n"c;
-    auto req = http(buffer[0 .. got].idup())[0].matches;
-    auto method = req[0];
-    auto url = req[1];
-    writeln(method, ' ', url);
-    switch (method) {
-    case "GET":
-        switch (url) {
-        case "/":
-            client.send(ok ~ plain ~ '\n');
-            client.send(method ~ ' ' ~ url ~ "\n\n");
-            client.send(buffer[0 .. got]);
+    while (true) {
+        // recv
+        auto client = listener.accept();
+        writef("%s %s\t", client.remoteAddress, client.hostName);
+        char[1024] buffer;
+        auto got = client.receive(buffer);
+        writeln(buffer[0..got]);
+        // resp
+        auto req = http(buffer[0 .. got].idup())[0].matches;
+        auto method = req[0];
+        auto url = req[1];
+        writeln(method, ' ', url);
+        switch (method) {
+        case "GET":
+            switch (url) {
+            case "/":
+                client.send(ok ~ plain ~ '\n');
+                client.send(index_html);
+                break;
+            case "/favicon.ico":
+                client.send(ok ~ png ~ '\n');
+                client.send(logo_png);
+                break;
+            default:
+                break;
+            }
             break;
         default:
             break;
         }
-        break;
-    default:
-        break;
-    }
 
-    client.close();
+        client.close();
+    }
 }
 
 /// @}
