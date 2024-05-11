@@ -7,5 +7,6 @@
     "targetType":   "library",
     "targetPath":   "../bin",
     "dependencies": {
+        "wasd:config" : {"path" : "../config"}
     }
 }

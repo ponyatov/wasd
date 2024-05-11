@@ -7,5 +7,6 @@
     "targetType":   "executable",
     "targetPath":   "../bin",
     "dependencies": {
+        "wasd:config" : {"path" : "../config"}
     }
 }
