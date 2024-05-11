@@ -1,0 +1,3 @@
+# WASM/sandbox
+
+WebAssembly doesn’t stand on its own. Like a game cartridge without a console or a [[HW/BluRay]] disc without a player, it’s incomplete in isolation. Much like a symbiote that needs to feed off of its host to survive, WebAssembly can’t interact with anything outside the bounds of its own [[WASM/sandbox]] unless the host allows it. All I/O and other interactions are done entirely at the behest of the host such as a browser or a console application. While this might sound like an unfair limitation, you’ll see a number of times throughout this book why this is actually a good thing.

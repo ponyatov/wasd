@@ -1,0 +1,1 @@
+WebAssembly is also not meant to [[WASM/replace JavaScript]]. This is somewhat of a controversial opinion, as a large group of WebAssembly devotees online are convinced that it represents the death knell of JavaScript. While it might signal the beginning of a new era in which you write significantly less manual JavaScript, you still need JS to host WebAssembly 1.0 in the browser.
