@@ -45,21 +45,34 @@ void serve(string argv0, string ip, ushort port) {
     // while (true) {
     // recv
     auto client = listener.accept();
-    writefln("%s %s", client.remoteAddress, client.hostName);
+    writef("%s %s\t", client.remoteAddress, client.hostName);
     char[1024] buffer;
     auto got = client.receive(buffer);
-    foreach (i; http(buffer[0 .. got].idup())) {
-        foreach (j; i) {
-            writeln(j);
-        }
-    }
     // resp
-    client.send("HTTP/1.1 200 OK\n"c);
-    client.send("Content-Type: text/plain; charset=utf-8\n"c);
-    client.send("\n"c);
-    client.send(buffer[0 .. got]);
+
+    const ok = "HTTP/1.1 200 OK\n"c;
+    const plain = "Content-Type: text/plain; charset=utf-8\n"c;
+    auto req = http(buffer[0 .. got].idup())[0].matches;
+    auto method = req[0];
+    auto url = req[1];
+    writeln(method, ' ', url);
+    switch (method) {
+    case "GET":
+        switch (url) {
+        case "/":
+            client.send(ok ~ plain ~ '\n');
+            client.send(method ~ ' ' ~ url ~ "\n\n");
+            client.send(buffer[0 .. got]);
+            break;
+        default:
+            break;
+        }
+        break;
+    default:
+        break;
+    }
+
     client.close();
-    // }
 }
 
 /// @}
