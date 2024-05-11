@@ -6,7 +6,7 @@
     "license":      "MIT",
     "targetType":   "library",
     "targetPath":   "bin",
-    "subPackages":  ["server","wasm"],
+    "subPackages":  ["config","server","wasm"],
     "dependencies": {
     }
 }

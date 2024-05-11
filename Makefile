@@ -36,6 +36,9 @@ D += $(wildcard src/*.d*)
 J += dub.json
 F += lib/$(MODULE).ini $(wildcard lib/*.f*)
 
+D += $(wildcard config/src/*.d*)
+J += config/dub.json
+
 D += $(wildcard server/src/*.d*)
 J += server/dub.json
 
@@ -44,9 +47,13 @@ J += wasm/dub.json
 
 # all
 .PHONY: all
-all: $(D) $(J) $(F) tmp/libwasd.objdump
-	$(BLD) :wasm && $(RUN) :server -- $(F)
-tmp/libwasd.objdump: bin/libwasd.a Makefile
+all: $(D) $(J) $(F) tmp/libwasd_config.objdump tmp/libwasd.objdump
+	$(BLD) :wasm
+	$(RUN) :server -- $(F)
+bin/libwasm_config.a: $(D)
+	$(BLD) :config
+
+tmp/%.objdump: bin/%.a Makefile
 	objdump -x $< > $@
 bin/libwasd.a: $(D)
 	$(BLD)

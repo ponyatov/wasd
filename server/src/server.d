@@ -1,4 +1,11 @@
+/// @file
+/// @brief tiny HTTP server for SPA applications
+
 module server;
+
+/// @defgroup server server
+/// @brief tiny HTTP server for SPA applications
+/// @{
 
 import std.stdio;
 import std.range;
@@ -13,3 +20,5 @@ void main(string[] args) {
 void arg(int argc, string argv) {
     writefln("argv[%d] = <%s>", argc, argv);
 }
+
+/// @}

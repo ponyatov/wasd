@@ -1,10 +1,10 @@
 {
-    "name":         "server",
-    "description":  "tiny HTTP SPA host",
+    "name":         "config",
+    "description":  "system-wide configuration",
     "authors":     ["Dmitry Ponyatov <dponyatov@gmail.com>"],
     "copyright":    "Copyright © 2024, Dmitry Ponyatov <dponyatov@gmail.com>",
     "license":      "MIT",
-    "targetType":   "executable",
+    "targetType":   "library",
     "targetPath":   "../bin",
     "dependencies": {
     }
