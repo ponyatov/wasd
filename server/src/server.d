@@ -30,6 +30,13 @@ void arg(int argc, string argv) {
     writefln("argv[%d] = <%s>", argc, argv);
 }
 
+import pegged.grammar;
+
+mixin(grammar(`
+    http:
+        head     < "GET"
+`));
+
 void serve(string argv0, string ip, ushort port) {
     auto listener = new Socket(AddressFamily.INET, SocketType.STREAM);
     writefln("%s @ http://%s:%d (%s)", argv0, ip, port, listener.hostName);
@@ -45,6 +52,7 @@ void serve(string argv0, string ip, ushort port) {
         client.send("\n"c);
         client.send(buffer[0 .. got]);
         client.close();
+        writeln(http(buffer[0 .. got].idup()));
     }
 }
 
