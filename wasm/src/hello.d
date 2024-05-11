@@ -1,0 +1,4 @@
+module hello;
+
+void nop() {
+}

@@ -1,12 +1,11 @@
 {
-    "name":         "wasd",
-    "description":  "virtual machine (Forth abstraction)",
+    "name":         "wasm",
+    "description":  "WebAssembly runtime",
     "authors":     ["Dmitry Ponyatov <dponyatov@gmail.com>"],
     "copyright":    "Copyright © 2024, Dmitry Ponyatov <dponyatov@gmail.com>",
     "license":      "MIT",
     "targetType":   "library",
-    "targetPath":   "bin",
-    "subPackages":  ["server","wasm"],
+    "targetPath":   "../bin",
     "dependencies": {
     }
 }

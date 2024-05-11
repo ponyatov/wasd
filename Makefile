@@ -17,7 +17,8 @@ DISTR = $(HOME)/distr
 # tool
 CURL   = curl -L -o
 CF     = clang-format -style=file
-DMD    = dmd
+REF    = git clone --depth 1 -o gh
+DMD    = /usr/bin/dmd
 LDC    = ldc2
 DC     = $(DMD)
 DUB    = /usr/bin/dub
@@ -25,19 +26,30 @@ RUN    = $(DUB) run   --compiler=$(DC)
 BLD    = $(DUB) build --compiler=$(DC)
 
 # package
-LDC_GZ = ldc2-$(LDC_VER)-linux-x86_64.tar.xz
+LDC_GZ  = ldc2-$(LDC_VER)-linux-x86_64.tar.xz
+LDC_URL = https://github.com/ldc-developers/ldc/releases/download/v$(LDC_VER)
 
 # src
 C += $(wildcard src/*.c*)
 H += $(wildcard inc/*.h*)
-D += $(wildcard src/*.d*) $(wildcard server/src/*.d*)
-J += dub.json server/dub.json
+D += $(wildcard src/*.d*)
+J += dub.json
 F += lib/$(MODULE).ini $(wildcard lib/*.f*)
+
+D += $(wildcard server/src/*.d*)
+J += server/dub.json
+
+D += $(wildcard wasm/src/*.d*)
+J += wasm/dub.json
 
 # all
 .PHONY: all
-all: $(D) $(J) $(F)
-	$(BLD) && $(RUN) :server -- $(F)
+all: $(D) $(J) $(F) tmp/libwasd.objdump
+	$(BLD) :wasm && $(RUN) :server -- $(F)
+tmp/libwasd.objdump: bin/libwasd.a Makefile
+	objdump -x $< > $@
+bin/libwasd.a: $(D)
+	$(BLD)
 
 # format
 .PHONY: format
@@ -67,11 +79,14 @@ install: doc gz ref
 update:
 	sudo apt update
 	sudo apt install -yu `cat apt.txt`
-gz: $(DISTR)/SDK/$(LDC_GZ)
-ref: ref/druntime
+gz:  $(DMD) $(DUB) $(DISTR)/SDK/$(LDC_GZ)
+ref: ref/druntime ref/phobos
 
 ref/druntime:
-	git clone --depth 1 -o gh https://github.com/ponyatov/druntime.git $@
+	$(REF) https://github.com/ponyatov/druntime.git $@
+
+ref/phobos:
+	$(REF) https://github.com/ponyatov/phobos.git $@
 
 $(DISTR)/SDK/$(LDC_GZ):
-	$(CURL) $@ https://github.com/ldc-developers/ldc/releases/download/v1.38.0/$(LDC_GZ)
+	$(CURL) $@ $(LDC_URL)/$(LDC_GZ)
