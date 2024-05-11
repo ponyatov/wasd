@@ -12,6 +12,7 @@ LDC_VER = 1.38.0
 # dir
 CWD   = $(CURDIR)
 GZ    = $(HOME)/gz
+DISTR = $(HOME)/distr
 
 # tool
 CURL   = curl -L -o
@@ -66,11 +67,11 @@ install: doc gz ref
 update:
 	sudo apt update
 	sudo apt install -yu `cat apt.txt`
-gz: $(GZ)/$(LDC_GZ)
+gz: $(DISTR)/SDK/$(LDC_GZ)
 ref: ref/druntime
 
 ref/druntime:
 	git clone --depth 1 -o gh https://github.com/ponyatov/druntime.git $@
 
-$(GZ)/$(LDC_GZ):
+$(DISTR)/SDK/$(LDC_GZ):
 	$(CURL) $@ https://github.com/ldc-developers/ldc/releases/download/v1.38.0/$(LDC_GZ)
