@@ -17,6 +17,9 @@ void main(string[] args) {
     }
 }
 
+/// @brief print single command line argument
+/// @param[in] argc index
+/// @param[in] argv value
 void arg(int argc, string argv) {
     writefln("argv[%d] = <%s>", argc, argv);
 }

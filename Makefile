@@ -47,16 +47,23 @@ J += wasm/dub.json
 
 # all
 .PHONY: all
-all: $(D) $(J) $(F) tmp/libwasd_config.objdump tmp/libwasd.objdump
+all: $(D) $(J) $(F) bin/wasd_server tmp/libwasd_wasm.objdump tmp/libwasd_config.objdump tmp/libwasd.objdump
+
+.PHONY: server
+server: bin/wasd_server $(F)
+	$^
+bin/wasd_server: $(D) $(J)
+	$(BLD) :server
+
+bin/libwasm_wasm.a: $(D)
 	$(BLD) :wasm
-	$(RUN) :server -- $(F)
 bin/libwasm_config.a: $(D)
 	$(BLD) :config
+bin/libwasd.a: $(D)
+	$(BLD)
 
 tmp/%.objdump: bin/%.a Makefile
 	objdump -x $< > $@
-bin/libwasd.a: $(D)
-	$(BLD)
 
 # format
 .PHONY: format
