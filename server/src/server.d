@@ -20,7 +20,7 @@ void main(string[] args) {
     foreach (argc, argv; args[1 .. $].enumerate(1)) {
         arg(argc, argv);
     }
-    serve(config.IP,config.PORT);
+    serve(args[0], config.IP, config.PORT);
 }
 
 /// @brief print single command line argument
@@ -30,8 +30,22 @@ void arg(int argc, string argv) {
     writefln("argv[%d] = <%s>", argc, argv);
 }
 
-void serve(string ip, uint16_t port) {
-    writefln("http://%s:%d",ip,port);
+void serve(string argv0, string ip, ushort port) {
+    auto listener = new Socket(AddressFamily.INET, SocketType.STREAM);
+    writefln("%s @ http://%s:%d (%s)", argv0, ip, port, listener.hostName);
+    listener.bind(new InternetAddress(ip, port));
+    listener.listen(1);
+    while (true) {
+        auto client = listener.accept();
+        writefln("%s %s", client.remoteAddress, client.hostName);
+        char[1024] buffer;
+        auto got = client.receive(buffer);
+        client.send("HTTP/1.1 200 OK\n"c);
+        client.send("Content-Type: text/plain; charset=utf-8\n"c);
+        client.send("\n"c);
+        client.send(buffer[0 .. got]);
+        client.close();
+    }
 }
 
 /// @}
