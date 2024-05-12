@@ -4,14 +4,16 @@
 module hello;
 
 extern (C): // disable D mangling
+@nogc:
 
 /// @defgroup hello hello
 /// @ingroup wasm
 /// @{
 
-void nop() {
+int add(int a, int b) {
+    return a + b;
 }
 
-// int add(int a, int b) { return a + b; }
+void init(){}
 
 /// @}

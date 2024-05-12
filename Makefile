@@ -37,7 +37,8 @@ D += $(wildcard src/*.d*)
 J += dub.json
 F += lib/$(MODULE).ini $(wildcard lib/*.f*)
 
-D += $(wildcard config/src/*.d*)
+CD = $(wildcard config/src/*.d*)
+D += $(CD)
 J += config/dub.json
 
 D += $(wildcard server/src/*.d*)
@@ -66,7 +67,7 @@ tmp/%.wat: bin/%.o
 	wasm2wat $< -o $@
 $(WB): bin/libwasm.a
 	ar x $< --output=bin
-bin/libwasm.a: $(wildcard $(CWD)/wasm/src/*.d)
+bin/libwasm.a: $(WD) $(CD) $(J)
 	$(DUB) build --compiler=$(LDC) :wasm
 
 # format
