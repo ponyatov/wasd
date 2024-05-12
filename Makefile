@@ -99,13 +99,16 @@ update:
 	sudo apt update
 	sudo apt install -yu `cat apt.txt`
 gz:  $(DMD) $(DUB) $(LDC)
-ref: ref/druntime ref/phobos
+ref: ref/druntime ref/phobos ref/libwasm
 
 ref/druntime:
 	$(REF) https://github.com/ponyatov/druntime.git $@
 
 ref/phobos:
 	$(REF) https://github.com/ponyatov/phobos.git $@
+
+ref/libwasm:
+	$(REF) https://github.com/etcimon/libwasm.git $@
 
 $(LDC): $(DISTR)/SDK/$(LDC_GZ)
 	xzcat $< | tar x && touch $@
