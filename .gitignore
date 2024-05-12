@@ -4,4 +4,5 @@
 *.exe
 *.o
 /docs/
+/ldc2-*/
 !.gitignore

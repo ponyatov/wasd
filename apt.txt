@@ -1,3 +1,5 @@
 git make curl
-code meld doxygen clang-format
+code meld doxygen clang-format-16
 ldc
+llvm-16 llvm-16-dev llvm-16-tools
+wabt
