@@ -10,6 +10,7 @@ import hello;
 /// @brief WebAssembly runtime for D language
 
 extern (C): // disable D mangling
+@nogc:
 
 /// @defgroup druntime druntime
 /// @ingroup wasm
@@ -24,6 +25,6 @@ void _start() {
 }
 
 /// @brief logging callback to `console.log(string)`
-extern void log(string msg);
+void log(string msg);
 
 /// @}

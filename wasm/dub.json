@@ -8,6 +8,7 @@
     "targetPath":    "../bin",
     "targetName":    "wasm",
     "dflags-ldc":   ["-mtriple=wasm32-unknown-unknown","-betterC"],
+    "versions":     ["log"],
     "dependencies": {
         "wasd:config" : {"path" : "../config"}
     }
