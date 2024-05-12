@@ -14,6 +14,7 @@ https://github.com/ponyatov/WASD/tree/dlang
 
 - [[D/runtime]]
 - [[D/server]]
+- [[WASM/LLVM]]
 
 ##### 
 

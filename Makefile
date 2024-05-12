@@ -76,7 +76,7 @@ hello: tmp/hello.wat
 tmp/hello.wat: tmp/hello.o
 	wasm2wat $< -o $@
 tmp/%.o: $(CWD)/wasm/src/%.d
-	cd tmp ; $(LDC) -mtriple=wasm32 -c $^
+	cd tmp ; $(LDC) -betterC -mtriple=wasm32 -c $^
 
 # format
 .PHONY: format

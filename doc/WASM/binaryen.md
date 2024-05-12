@@ -1,0 +1,2 @@
+# binaryen
+## [[WASM/WASM|WASM]]
