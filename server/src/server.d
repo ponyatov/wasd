@@ -41,20 +41,14 @@ const logo_png = cast(immutable ubyte[]) import("logo.png");
 /// @name MIME types
 /// @{
 const ok = "HTTP/1.1 200 OK\n"c;
+const err404 = "HTTP/1.1 404 Not Found\n"c;
 const plain = "Content-Type: text/plain; charset=utf-8\n"c;
+const html = "Content-Type: text/html; charset=utf-8\n"c;
+const css = "Content-Type: text/css; charset=utf-8\n"c;
 const png = "Content-Type: image/png\n"c;
 /// @}
 
 /// @name network i/o
-
-/// @brief get a parse HTTP request (most dumb way: only first header line)
-/// @param[in] acrtive client socket
-string[] http_request(Socket client) {
-    writef("%s %s\t", client.remoteAddress, client.hostName);
-    char[1024] buffer;
-    auto got = client.receive(buffer);
-    return buffer[0 .. got].idup().splitLines()[0].split(' ');
-}
 
 /// @brief serve HTTP request (single thread, no socket.select)
 /// @param[in] argv0 server binary/executeable file name (for log)
@@ -73,27 +67,56 @@ void serve(string argv0, string ip = config.IP, ushort port = config.PORT) {
         auto url = req[1];
         writeln(method, ' ', url);
         // resp
-        switch (method) {
-        case "GET":
-            switch (url) {
-            case "/":
-                client.send(ok ~ plain ~ '\n');
-                client.send(index_html);
-                break;
-            case "/favicon.ico":
-                client.send(ok ~ png ~ '\n');
-                client.send(logo_png);
-                break;
-            default:
-                break;
-            }
-            break;
-        default:
-            break;
-        }
-
-        client.close();
+        route(client, method, url);
     }
+}
+
+/// @brief get a parse HTTP request (most dumb way: only first header line)
+/// @param[in] client active socket
+string[] http_request(Socket client) {
+    writef("%s %s\t", client.remoteAddress, client.hostName);
+    char[1024] buffer;
+    auto got = client.receive(buffer);
+    return buffer[0 .. got].idup().splitLines()[0].split(' ');
+}
+
+/// @brief request router
+/// @param[in] client socket
+/// @param[in] method
+/// @param[in] url
+void route(Socket client, string method, string url) {
+    switch (method) {
+    case "GET":
+        get(client, url);
+        break;
+    default:
+        break;
+    }
+
+}
+
+/// @brief GET router
+/// @param[in] client socket
+/// @param[in] url
+void get(Socket client, string url) {
+    switch (url) {
+    case "/":
+        client.send(ok ~ html ~ '\n');
+        client.send(index_html);
+        break;
+    case "/css.css":
+        client.send(ok ~ css ~ '\n');
+        client.send(css_css);
+        break;
+    case "/favicon.ico":
+        client.send(ok ~ png ~ '\n');
+        client.send(logo_png);
+        break;
+    default:
+        client.send(err404 ~ plain ~ '\n' ~ err404 ~ url);
+        break;
+    }
+    client.close();
 }
 
 /// @}

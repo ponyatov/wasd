@@ -52,7 +52,7 @@ all: $(D) $(J) $(F) bin/wasd_server tmp/libwasd_wasm.objdump tmp/libwasd_config.
 .PHONY: server
 server: bin/wasd_server $(F)
 	$^
-bin/wasd_server: $(D) $(J)
+bin/wasd_server: $(D) $(J) static/*
 	$(BLD) :server
 
 bin/libwasm_wasm.a: $(D)
