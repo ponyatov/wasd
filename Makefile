@@ -43,12 +43,15 @@ J += config/dub.json
 D += $(wildcard server/src/*.d*)
 J += server/dub.json
 
-D += $(wildcard wasm/src/*.d*)
+WD = $(wildcard wasm/src/*.d*)
+D += $(WD)
 J += wasm/dub.json
+WB = $(subst .d,.o  ,$(subst wasm/src/,bin/,$(WD)))
+WT = $(subst .o,.wat,$(subst      bin/,tmp/,$(WB)))
 
 # all
 .PHONY: all
-all: $(D) $(J) $(F) bin/wasd_server tmp/libwasd_wasm.objdump tmp/libwasd_config.objdump tmp/libwasd.objdump
+all: bin/wasd_server wasm
 
 .PHONY: server
 server: bin/wasd_server $(F)
@@ -56,27 +59,15 @@ server: bin/wasd_server $(F)
 bin/wasd_server: $(D) $(J) static/*
 	$(BLD) :server
 
-bin/libwasm_wasm.a: $(D)
-	$(BLD) :wasm
-bin/libwasm_config.a: $(D)
-	$(BLD) :config
-bin/libwasd.a: $(D)
-	$(BLD)
-
-tmp/%.objdump: bin/%.a Makefile
-	objdump -x $< > $@
-
 # wasm
 .PHONY: wasm
-wasm: $(wildcard $(CWD)/wasm/src/*.d)
-	cd tmp ; $(LDC) -mtriple=wasm32 -c $^
-
-.PHONY: hello
-hello: tmp/hello.wat
-tmp/hello.wat: tmp/hello.o
+wasm: $(WT)
+tmp/%.wat: bin/%.o
 	wasm2wat $< -o $@
-tmp/%.o: $(CWD)/wasm/src/%.d
-	cd tmp ; $(LDC) -betterC -mtriple=wasm32 -c $^
+$(WB): bin/libwasm.a
+	ar x $< --output=bin
+bin/libwasm.a: $(wildcard $(CWD)/wasm/src/*.d)
+	$(DUB) build --compiler=$(LDC) :wasm
 
 # format
 .PHONY: format

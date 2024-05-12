@@ -1,11 +1,11 @@
 {
-    "name":         "server",
-    "description":  "tiny HTTP SPA host",
-    "authors":     ["Dmitry Ponyatov <dponyatov@gmail.com>"],
-    "copyright":    "Copyright © 2024, Dmitry Ponyatov <dponyatov@gmail.com>",
-    "license":      "MIT",
-    "targetType":   "executable",
-    "targetPath":   "../bin",
+    "name":          "server",
+    "description":   "tiny HTTP SPA host",
+    "authors":      ["Dmitry Ponyatov <dponyatov@gmail.com>"],
+    "copyright":     "Copyright © 2024, Dmitry Ponyatov <dponyatov@gmail.com>",
+    "license":       "MIT",
+    "targetType":    "executable",
+    "targetPath":    "../bin",
     "stringImportPaths": ["../static","../doc"],
     "dependencies": {
         "wasd:config" : {"path" : "../config"}

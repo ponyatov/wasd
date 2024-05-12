@@ -1,11 +1,13 @@
 {
-    "name":         "wasm",
-    "description":  "WebAssembly runtime",
-    "authors":     ["Dmitry Ponyatov <dponyatov@gmail.com>"],
-    "copyright":    "Copyright © 2024, Dmitry Ponyatov <dponyatov@gmail.com>",
-    "license":      "MIT",
-    "targetType":   "library",
-    "targetPath":   "../bin",
+    "name":          "wasm",
+    "description":   "WebAssembly runtime",
+    "authors":      ["Dmitry Ponyatov <dponyatov@gmail.com>"],
+    "copyright":     "Copyright © 2024, Dmitry Ponyatov <dponyatov@gmail.com>",
+    "license":       "MIT",
+    "targetType":    "library",
+    "targetPath":    "../bin",
+    "targetName":    "wasm",
+    "dflags-ldc":   ["-mtriple=wasm32-unknown-unknown","-betterC"],
     "dependencies": {
         "wasd:config" : {"path" : "../config"}
     }
